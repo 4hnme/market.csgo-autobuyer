@@ -29,7 +29,7 @@ a bot for market.csgo.com that automatically buys items for specific price or lo
   ```shell
   python3 main.py
   ```
-  > Note: Windows may require installing `windows-curses` first, for this do:
+  Note: Windows may require installing `windows-curses` first, for this do:
   ```shell
   pip install windows-curses
   ```
