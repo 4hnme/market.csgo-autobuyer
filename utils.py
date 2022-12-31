@@ -42,34 +42,28 @@ attachable = (1, 2, 3)
 
 # updating userconfig. Does not affect the config file
 def config_update():
+    menus['List'] = []
     with open(r'config', mode='r', encoding='utf-8') as f:
-        items = []
-        prices_ = []
-        menus['List'] = ['Go back']
-        lines = f.readlines()
-        # definitevly could've been better but i don't care
-        key = lines[0][8:]
-        key = key.strip('\n')
-        names = lines[1][11:]
-        names = names.strip('\n')
-        names = names.split(', ')
-        prices = lines[2][14:]
-        prices = prices.strip('\n')
-        prices = prices.split(', ')
-        currency_ = lines[3][9:].strip('\n')
-        if currency_ == 'RUB':
+        data = f.readlines()
+        for index in range(len(data)):
+            line = data[index]
+            data[index] = line.strip(' ').strip('\n')
+        key = data[0][data[0].find('=')+1:]
+        item_names = data[1][data[1].find('=')+1:].split(',')
+        item_prices = data[2][data[2].find('=')+1:].split(',')
+        currency = data[3][data[3].find('=')+1:]
+        if currency == 'RUB':
             denominator = 100
         else:
             denominator = 1000
-        for x in range(len(prices)):
-            prices_.append(int(prices[x]))
-        for x in range(len(names)):
-            name = names[x]
-            price = prices_[x]
-            new_item = mItem(name, price)
+        items = []
+        for index in range(len(item_names)):
+            new_name = item_names[index].strip(' ')
+            new_price = int(item_prices[index].strip(' '))
+            new_item = mItem(new_name, new_price)
             items.append(new_item)
             menus['List'].append(
-                '{}: {} {}'.format(name, price/denominator, currency_)
+                '{}: {} {}'.format(new_name, new_price/denominator, currency)
             )
     return key, items
 
