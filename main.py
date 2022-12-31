@@ -3,7 +3,7 @@ import curses
 import threading
 from utils import Menu, config_update, add_to_logs, buy
 from csgo_market_api import CSGOMarket
-just_the_interface = True
+just_the_interface = False
 
 
 # main function, called via wrapper to prevent from messing up the terminal
