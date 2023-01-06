@@ -3,11 +3,12 @@ import pyfiglet
 import curses
 
 stop_threads = False
+key = ''
 # declaring array to store menu's text
 menus = {
     'Main': [
         'How to use',
-        '1 api_key goes here',
+        '1 key goes here',
         '2 money go here',
         'List of items',
         'Settings menu',
@@ -16,17 +17,20 @@ menus = {
         'Go back',
         'Delay between eash buy request: ',
         'Maximal amount of log entries on screen: ',
-        'Show titles in that shitty font: '],
+        'Show titles in that shitty font: ',
+        'Show API key: '],
     'Logs': ['Go back'],
     'List': [],
     'Hotkeys': [
         'Go back',
-        'j / d - moving down one line / to the bottom',
-        'k / u - moving up one line / to the top',
-        'h, l - altering a setting',
+        'j(↓) / d - moving down one line / to the bottom',
+        'k(↑) / u - moving up one line / to the top',
+        'h(←), l(→) - altering a setting',
         'space, enter - select a menu',
         'backspace - returning to the main menu',
-        'r - refreshing the config (does not modify the file)'
+        'p - pause / restart the bot',
+        'r - refreshing the config (does not modify the file)',
+        'q - exit the program'
     ]
     }
 
@@ -35,13 +39,15 @@ menus = {
 settings_values = {
     '1': [0.1, 1, 10, 1],
     '2': [0, 20, 30, 10],
-    '3': [0, 1, 1, 1]
+    '3': [0, 1, 1, 1],
+    '4': [0, 0, 1, 1]
 }
-attachable = (1, 2, 3)
+attachable = (1, 2, 3, 4)
 
 
 # updating userconfig. Does not affect the config file
 def config_update():
+    global key
     menus['List'] = ['Go back']
     with open(r'config', mode='r', encoding='utf-8') as f:
         data = f.readlines()
@@ -71,7 +77,14 @@ def config_update():
 # class for displaying the menu
 class Menu:
     def __init__(self, stdscr, title):
+        global key
         self.name = title
+        if self.name == 'Settings':
+            for i in attachable:
+                attach_line(i)
+        elif self.name == 'Main':
+            key_to_show = key if settings_values['4'][1] == 1 else '*'*12
+            menus['Main'][1] = 'API-key: ' + key_to_show
         self.offset = 0
         self.max_offset = 0
         if settings_values['3'][1] == 1:
@@ -82,9 +95,6 @@ class Menu:
         self.stdscr = stdscr
         self.cursor = 0
         self.height = len(self.lines)
-        if self.name == 'Settings':
-            for i in attachable:
-                attach_line(i)
 
 # updating the screen
     def update(self):
@@ -108,7 +118,6 @@ class Menu:
                 self.stdscr.addstr(self.lines[x] + '\n', attr)
             except Exception:
                 self.stdscr.addstr('fuck\n')
-                # pass
 
 # function for handling key inputs
     def key_handler(self, key):

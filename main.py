@@ -1,9 +1,9 @@
 import sys
 import curses
 import threading
-from utils import Menu, config_update, add_to_logs, buy
+from utils import Menu, config_update, add_to_logs, buy, settings_values
 from csgo_market_api import CSGOMarket
-just_the_interface = False
+just_the_interface = True
 
 
 # main function, called via wrapper to prevent from messing up the terminal
@@ -16,7 +16,7 @@ def main(stdscr):
     active_menu = Menu(stdscr, 'Main')
     rapira = CSGOMarket(api_key)
     get_balance = rapira.get_money()
-    active_menu.lines[1] = 'API-key: ' + str(api_key)
+    active_menu.lines[1] = 'API-key: ' + (str(api_key) if settings_values['4'][1] == 1 else '*'*12)
     active_menu.lines[2] = 'Balance: {} {}'.format(
         get_balance['money'],
         get_balance['currency']
