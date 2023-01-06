@@ -48,6 +48,10 @@ def main(stdscr):
             else:
                 pause = False
                 stop_threads = False
+                buyer = threading.Thread(target=buy, args=(
+                                             objs, rapira, active_menu,
+                                             lambda: stop_threads
+                                         ), daemon=True)
                 buyer.start()
                 add_to_logs('Program Restarted')
         # re-refreshing the config
