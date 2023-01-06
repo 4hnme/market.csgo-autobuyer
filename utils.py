@@ -2,12 +2,12 @@ import time
 import pyfiglet
 import curses
 
-stop_threads = False
 key = ''
+item_count = 0
 # declaring array to store menu's text
 menus = {
     'Main': [
-        'How to use',
+        'Controls',
         '1 key goes here',
         '2 money go here',
         'List of items',
@@ -18,7 +18,8 @@ menus = {
         'Delay between eash buy request: ',
         'Maximal amount of log entries on screen: ',
         'Show titles in that shitty font: ',
-        'Show API key: '],
+        'Show API key: ',
+        'Show progress bar: '],
     'Logs': ['Go back'],
     'List': [],
     'Hotkeys': [
@@ -40,14 +41,17 @@ settings_values = {
     '1': [0.1, 1, 10, 1],
     '2': [0, 20, 30, 10],
     '3': [0, 1, 1, 1],
-    '4': [0, 0, 1, 1]
+    '4': [0, 0, 1, 1],
+    '5': [0, 0, 1, 1]
 }
-attachable = (1, 2, 3, 4)
+attachable = (1, 2, 3, 4, 5)
 
 
 # updating userconfig. Does not affect the config file
 def config_update():
     global key
+    global item_count
+    item_count = 0
     menus['List'] = ['Go back']
     with open(r'config', mode='r', encoding='utf-8') as f:
         data = f.readlines()
@@ -68,6 +72,7 @@ def config_update():
             new_price = int(item_prices[index].strip(' '))
             new_item = mItem(new_name, new_price)
             items.append(new_item)
+            item_count += 1
             menus['List'].append(
                 '{}: {} {}'.format(new_name, new_price/denominator, currency)
             )
@@ -118,6 +123,18 @@ class Menu:
                 self.stdscr.addstr(self.lines[x] + '\n', attr)
             except Exception:
                 self.stdscr.addstr('fuck\n')
+        if settings_values['5'][1] == 1:
+            global item_count
+            window_height, window_width = self.stdscr.getmaxyx()
+            current_progress = 2
+            total_steps = window_width - (6 + len(str(current_progress) + str(item_count)))
+            complition = current_progress / item_count
+            complete_steps = total_steps * complition
+            vertical_lines = '#'*round(complete_steps) + '.'*round(total_steps - complete_steps)
+            line = '[{}][{}/{}]'.format(
+                vertical_lines, current_progress, item_count
+            )
+            self.stdscr.addstr(window_height-1, 0, line)
 
 # function for handling key inputs
     def key_handler(self, key):
@@ -210,8 +227,6 @@ def attach_line(num):
 def add_to_logs(msg):
     t = time.localtime()
     text = '[{}]: {}'.format(time.strftime('%H:%M:%S', t), msg)
-    # if len(menus['Logs']) > settings_values['2'][1]:
-    #     menus['Logs'].pop(1)
     menus['Logs'].append(text)
 
 
@@ -225,7 +240,7 @@ class mItem:
 # sending buy reques for every item in object list
 def buy(items, rapira, menu, stop):
     temp = {}
-    global stop_threads
+    global current_progress
     while True:
         if stop():
             break
@@ -234,10 +249,7 @@ def buy(items, rapira, menu, stop):
         menus['Main'][2] = 'Balance: {} {}'.format(
             balance1, get_balance['currency']
         )
-        # if menu.title == 'Main':
-        #     menu.lines[2] = 'Balance: ' + str(balance1) + ' ' + currency
-        # else:
-        #     menus['Main'][2] = 'Balance: ' + str(balance1) + ' ' + currency
+        current_progress = 0
         for x in items:
             try:
                 temp = rapira.buy(x.name, x.price)
@@ -255,4 +267,5 @@ def buy(items, rapira, menu, stop):
                     )
                 )
             time.sleep(0.5)
+            current_progress += 1
         time.sleep(settings_values['1'][1])

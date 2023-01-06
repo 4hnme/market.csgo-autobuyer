@@ -3,11 +3,13 @@ import curses
 import threading
 from utils import Menu, config_update, add_to_logs, buy, settings_values
 from csgo_market_api import CSGOMarket
-just_the_interface = True
+just_the_interface = False
 
 
 # main function, called via wrapper to prevent from messing up the terminal
 def main(stdscr):
+    # might turn this on later, looks nice on my terminal
+    # curses.use_default_colors()
     # generating variables from the config file
     api_key, objs = config_update()
 
@@ -36,9 +38,11 @@ def main(stdscr):
     while True:
         active_menu.update()
         key = stdscr.getch()
+        # exiting the program
         if key == ord('q'):
             stop_threads = True
             break
+        # stoping / restarting the buying process
         if key == ord('p') and not just_the_interface:
             if not pause:
                 pause = True
