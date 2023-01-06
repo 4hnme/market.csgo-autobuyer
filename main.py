@@ -12,6 +12,7 @@ def main(stdscr):
     api_key, objs = config_update()
 
     # setting up objects for later
+    pause = False
     active_menu = Menu(stdscr, 'Main')
     rapira = CSGOMarket(api_key)
     get_balance = rapira.get_money()
@@ -30,8 +31,6 @@ def main(stdscr):
                                     ), daemon=True)
         buyer.start()
         add_to_logs('Program Started')
-    for x in range(50):
-        add_to_logs(x)
 
     # infinite loop, main body of the script
     while True:
@@ -40,8 +39,19 @@ def main(stdscr):
         if key == ord('q'):
             stop_threads = True
             break
+        if key == ord('p') and not just_the_interface:
+            if not pause:
+                pause = True
+                stop_threads = True
+                buyer.join()
+                add_to_logs('Program Paused')
+            else:
+                pause = False
+                stop_threads = False
+                buyer.start()
+                add_to_logs('Program Restarted')
         # re-refreshing the config
-        if key == ord('r'): 
+        if key == ord('r'):
             api_key, objs = config_update()
             if not just_the_interface:
                 buyer = threading.Thread(target=buy, args=(

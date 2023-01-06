@@ -42,7 +42,7 @@ attachable = (1, 2, 3)
 
 # updating userconfig. Does not affect the config file
 def config_update():
-    menus['List'] = []
+    menus['List'] = ['Go back']
     with open(r'config', mode='r', encoding='utf-8') as f:
         data = f.readlines()
         for index in range(len(data)):
@@ -113,20 +113,20 @@ class Menu:
 # function for handling key inputs
     def key_handler(self, key):
         # moving cursor up
-        if key == ord('k'):
+        if key == ord('k') or key == 259:
             if self.cursor > self.offset:
                 self.cursor -= 1
             elif self.offset > 0:
                 self.offset -= 1
                 self.cursor -= 1
         # moving cursor down
-        if key == ord('j'):
+        if key == ord('j') or key == 258:
             if self.cursor < self.height + self.offset - 1:
                 self.cursor += 1
             elif self.name == 'Logs' and self.offset < self.max_offset:
                 self.offset += 1
                 self.cursor += 1
-        if key == ord('h') or key == ord('l'):
+        if key == ord('h') or key == ord('l') or key == 260 or key == 261:
             if self.name == 'Settings' and self.cursor in attachable:
                 adjust_line(key, self.cursor)
         # making navigating logs this easier
@@ -137,7 +137,7 @@ class Menu:
             self.cursor = len(self.lines) - 1
             self.offset = self.max_offset
         # making quick exit to main meny
-        if key == 263 and self.name != 'Main':
+        if (key == 263 or key == 8) and self.name != 'Main':
             new_menu = Menu(self.stdscr, 'Main')
             return new_menu
         # switching menus
@@ -164,8 +164,10 @@ class Menu:
 # actual working settings. It sucks
 def adjust_line(key, cursor):
     # j is 104, h is 108 -> 0, 1 -> -0, 2 -> -1, 1
-    modifier = (key // 106) * 2 - 1
-    print(modifier)
+    if key > 200:
+        modifier = (key // 261) * 2 - 1
+    else:
+        modifier = (key // 106) * 2 - 1
     # changing the value keeping it within set boundaries
     temp_values = settings_values[str(cursor)]
     temp_values[1] = round(temp_values[1] + temp_values[3] * modifier)
