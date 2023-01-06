@@ -7,7 +7,6 @@ import requests
 def _send_request(func):
     def wrapper(*args, **kwargs):
         url, params, timeout = func(*args, **kwargs)
-        requests.packages.urllib3.util.connection.HAS_IPV6 = False
         end_time = time.time() + timeout
         while True:
             response = requests.get(url, params)
