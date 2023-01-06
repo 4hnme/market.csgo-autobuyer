@@ -13,7 +13,9 @@ a bot for market.csgo.com that automatically buys items for specific price or lo
   > Note: this takes a lot of unnecessary space, feel free to cut it out entirely
   * requests to market.csgo.com are made with python `csgo_market_api` library 
 
-## configuration
+## usage
+
+### configuration
   modify your `config` file according to these rules:
   * amount of items must be the same as amout of prices
   * item names must be taken directly from market.csgo.com urls
@@ -24,7 +26,8 @@ a bot for market.csgo.com that automatically buys items for specific price or lo
 
     > Note: USD functionality remains untested, if you are stuck with using it proceed with caution
 
-## how to use
+### how to use
+
   * run the `main.py` file via your command line:
   ```shell
   python3 main.py
@@ -34,12 +37,14 @@ a bot for market.csgo.com that automatically buys items for specific price or lo
   pip install windows-curses
   ```
 ### controls
-  * j / d - moving down one line / to the bottom
-  * k / u - moving up one line / to the top
-  * h, l - altering a setting
+  * j(↓) / d - moving down one line / to the bottom
+  * k(↑) / u - moving up one line / to the top
+  * h(←), l(→) - altering a setting
   * space, enter - select a menu
   * backspace - returning to the main menu
+  * p - pause / restart the bot
   * r - refreshing the config (does not modify the file)
+  * q - exit the program
   
 ### применение для русскоговорящих людей
   поскольку пополнить счёт на своём аккаунте в Steam для некоторых людей стало проблематично или вовсе невозможно, этот скрипт может использоваться для обхода региональных ограничений:
