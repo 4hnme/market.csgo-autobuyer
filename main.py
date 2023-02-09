@@ -9,9 +9,10 @@ just_the_interface = False
 # main function, called via wrapper to prevent from messing up the terminal
 def main(stdscr):
     # might turn this on later, looks nice on my terminal
-    # curses.use_default_colors()
+    curses.use_default_colors()
     # generating variables from the config file
     api_key, objs = config_update()
+    print(api_key)
 
     # setting up objects for later
     pause = False

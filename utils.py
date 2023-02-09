@@ -47,8 +47,55 @@ settings_values = {
 attachable = (1, 2, 3, 4, 5)
 
 
-# updating userconfig. Does not affect the config file
+def parse(data, keyword):
+    if keyword != "items":
+        for i in range(len(data)):
+            line = data[i].strip('\n').strip(' ')
+            if line.startswith(keyword):
+                return line[line.find("=")+1:]
+    else:
+        state = 0
+        items = []
+        for i in range(len(data)):
+            line = data[i].strip('\n').strip(' ')
+            if state == 0 and line == "items:":
+                state = 1
+            elif state == 1:
+                if line == '':
+                    state = 0
+                    break
+                item_name = line[:line.find(',')]
+                item_price = line[line.find(',')+2:]
+                new_item = mItem(item_name, item_price)
+                items.append(new_item)
+        return items
+
+
 def config_update():
+    global key
+    global item_count
+    item_count = 0
+    menus['List'] = ['Go back']
+    with open(r'jconfig', mode='r', encoding='utf-8') as f:
+        data = f.readlines()
+        key = parse(data, "api_key")
+        currency = parse(data, "currency")
+        items = parse(data, "items")
+        if currency == 'RUB':
+            denominator = 100
+        else:
+            denominator = 1000
+        for item in items:
+            menus['List'].append(
+                '{}: {} {}'.format(item.name, int(item.price)/denominator, currency)
+            )
+            item_count += 1
+    return key, items
+    pass
+
+
+# updating userconfig. Does not affect the config file
+def config_update_legacy():
     global key
     global item_count
     item_count = 0
@@ -167,7 +214,7 @@ class Menu:
             new_menu = Menu(self.stdscr, 'Main')
             return new_menu
         # switching menus
-        if key == ord(' ') or key == 10:
+        if key == ord(' ') or key == 10 or key == 459:
             if self.name == 'Main':
                 if self.cursor == 0:
                     new_menu = Menu(self.stdscr, 'Hotkeys')

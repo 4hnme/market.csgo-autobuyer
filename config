@@ -1,4 +1,5 @@
-api_key=
-item_names=CS20 Case, Clutch Case
-buying_prices=30, 20
+api_key=123456789abc
 currency=RUB
+items: 
+  CS20 Case, 30
+  Clutch case, 20
